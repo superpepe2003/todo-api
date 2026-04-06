@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  role         Role           @default(USER)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  assignedTasks  Task[]        @relation("AssignedTo")
+  createdTasks   Task[]        @relation("CreatedBy")
+  appMemberships AppMember[]
+  progress       TaskProgress[]
+  notifications  Notification[]
+}
+
+model App {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  tasks       Task[]
+  members     AppMember[]
+}
+
+model AppMember {
+  id        Int      @id @default(autoincrement())
+  appId     Int
+  userId    Int
+  joinedAt  DateTime @default(now())
+
+  app       App      @relation(fields: [appId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([appId, userId])
+}
+
+model Task {
+  id            Int           @id @default(autoincrement())
+  title         String
+  description   String?
+  type          TaskType      @default(BACKEND)
+  status        TaskStatus    @default(PENDING)
+  progress      Int           @default(0)
+  deadline      DateTime?
+  deadlineDays  Int?
+  appId         Int
+  assignedToId  Int?
+  createdById   Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  app           App           @relation(fields: [appId], references: [id])
+  assignedTo    User?         @relation("AssignedTo", fields: [assignedToId], references: [id])
+  createdBy     User          @relation("CreatedBy", fields: [createdById], references: [id])
+  progressLogs  TaskProgress[]
+  notifications Notification[]
+}
+
+model TaskProgress {
+  id          Int      @id @default(autoincrement())
+  taskId      Int
+  userId      Int
+  percentage  Int
+  detail      String   @db.Text
+  createdAt   DateTime @default(now())
+
+  task        Task     @relation(fields: [taskId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  taskId    Int?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  task      Task?    @relation(fields: [taskId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskType {
+  BACKEND
+  FRONTEND
+  FULLSTACK
+  OTHER
+}
