@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -16,8 +17,18 @@ async function bootstrap() {
     credentials: true,
   });
 
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Task Manager API')
+    .setDescription('API de gestión de tareas')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
+
   const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);
   console.log(`Backend corriendo en http://localhost:${port}`);
+  console.log(`Swagger docs en http://localhost:${port}/api/docs`);
 }
 bootstrap();
