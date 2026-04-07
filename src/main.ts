@@ -12,9 +12,8 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: 'http://localhost:4200',
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: process.env.CORS_ORIGIN?.split(',') ?? 'http://localhost:4200',
+    credentials: true,
   });
 
   const port = configService.get<number>('PORT') ?? 3000;
