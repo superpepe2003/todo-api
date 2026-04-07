@@ -64,6 +64,7 @@ model Task {
   type          TaskType      @default(BACKEND)
   status        TaskStatus    @default(PENDING)
   progress      Int           @default(0)
+  priority      Int           @default(3)
   deadline      DateTime?
   deadlineDays  Int?
   appId         Int

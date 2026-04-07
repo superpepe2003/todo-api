@@ -54,7 +54,7 @@ export class TasksService {
         createdBy: { select: { id: true, name: true } },
         app: { select: { id: true, name: true } },
       },
-      orderBy: { deadline: 'asc' },
+      orderBy: [{ priority: 'desc' }, { deadline: 'asc' }],
     });
 
     const result = tasks.map(attachIsOverdue);
@@ -104,6 +104,7 @@ export class TasksService {
         createdById,
         deadlineDays: dto.deadlineDays,
         deadline,
+        priority: dto.priority ?? 3,
       },
     });
   }

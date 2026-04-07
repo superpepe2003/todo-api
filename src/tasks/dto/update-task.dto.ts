@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsInt, IsDateString, Min } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsInt, IsDateString, Min, Max } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { TaskType } from '@prisma/client';
 
@@ -33,4 +33,11 @@ export class UpdateTaskDto {
   @IsDateString()
   @IsOptional()
   deadline?: string;
+
+  @ApiPropertyOptional({ example: 4, description: 'Prioridad 1-5 (1=mínima, 5=máxima)' })
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  @IsOptional()
+  priority?: number;
 }
