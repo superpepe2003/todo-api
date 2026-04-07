@@ -13,7 +13,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? 'http://localhost:4200',
+    origin: process.env.CORS_ORIGIN ?? 'http://localhost:4200',
     credentials: true,
   });
 
@@ -24,11 +24,11 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('swagger', app, document);
 
   const port = configService.get<number>('PORT') ?? 3000;
   await app.listen(port);
   console.log(`Backend corriendo en http://localhost:${port}`);
-  console.log(`Swagger docs en http://localhost:${port}/api/docs`);
+  console.log(`Swagger docs en http://localhost:${port}/swagger`);
 }
 bootstrap();
