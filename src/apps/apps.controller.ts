@@ -1,8 +1,8 @@
 import {
   Controller, Get, Post, Patch, Delete,
-  Param, Body, UseGuards, ParseIntPipe,
+  Param, Body, UseGuards, ParseIntPipe, Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AppsService } from './apps.service';
 import { CreateAppDto } from './dto/create-app.dto';
 import { UpdateAppDto } from './dto/update-app.dto';
@@ -22,9 +22,10 @@ export class AppsController {
 
   @Get()
   @ApiOperation({ summary: 'Listar apps (admin: todas, user: sus apps)' })
+  @ApiQuery({ name: 'categoryId', required: false, description: 'Filtrar por categoría' })
   @ApiResponse({ status: 200, description: 'Lista de aplicaciones' })
-  async findAll(@CurrentUser() user: any) {
-    const data = await this.appsService.findAll(user.id, user.role);
+  async findAll(@CurrentUser() user: any, @Query('categoryId') categoryId?: string) {
+    const data = await this.appsService.findAll(user.id, user.role, categoryId ? parseInt(categoryId) : undefined);
     return ok(data);
   }
 

@@ -25,17 +25,20 @@ export class TasksController {
   @ApiQuery({ name: 'appId', required: false, description: 'Filtrar por aplicación' })
   @ApiQuery({ name: 'status', required: false, description: 'Filtrar por estado (PENDING, IN_PROGRESS, COMPLETED, CANCELLED)' })
   @ApiQuery({ name: 'assignedToId', required: false, description: 'Filtrar por usuario asignado' })
+  @ApiQuery({ name: 'categoryId', required: false, description: 'Filtrar por categoría de la app' })
   @ApiResponse({ status: 200, description: 'Lista de tareas' })
   async findAll(
     @CurrentUser() user: any,
     @Query('appId') appId?: string,
     @Query('status') status?: string,
     @Query('assignedToId') assignedToId?: string,
+    @Query('categoryId') categoryId?: string,
   ) {
     const filters = {
       appId: appId ? parseInt(appId) : undefined,
       status,
       assignedToId: assignedToId ? parseInt(assignedToId) : undefined,
+      categoryId: categoryId ? parseInt(categoryId) : undefined,
     };
     const data = await this.tasksService.findAll(filters, user.id, user.role);
     return ok(data);

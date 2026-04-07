@@ -7,13 +7,14 @@ import { UpdateAppDto } from './dto/update-app.dto';
 export class AppsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(userId: number, role: string) {
-    if (role === 'ADMIN') {
-      return this.prisma.app.findMany({ include: { members: true, tasks: true } });
-    }
+  async findAll(userId: number, role: string, categoryId?: number) {
+    const where: any = {};
+    if (categoryId) where.categoryId = categoryId;
+    if (role !== 'ADMIN') where.members = { some: { userId } };
+
     return this.prisma.app.findMany({
-      where: { members: { some: { userId } } },
-      include: { members: true, tasks: true },
+      where,
+      include: { members: true, tasks: true, category: true },
     });
   }
 
@@ -21,6 +22,7 @@ export class AppsService {
     const app = await this.prisma.app.findUnique({
       where: { id },
       include: {
+        category: true,
         members: { include: { user: { select: { id: true, name: true, email: true, role: true } } } },
         tasks: { include: { assignedTo: { select: { id: true, name: true } } } },
       },
@@ -30,7 +32,7 @@ export class AppsService {
   }
 
   async create(dto: CreateAppDto) {
-    return this.prisma.app.create({ data: dto });
+    return this.prisma.app.create({ data: dto, include: { category: true } });
   }
 
   async update(id: number, dto: UpdateAppDto) {

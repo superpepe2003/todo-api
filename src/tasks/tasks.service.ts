@@ -39,11 +39,12 @@ export class TasksService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
-  async findAll(filters: { appId?: number; status?: string; assignedToId?: number }, userId: number, role: string) {
+  async findAll(filters: { appId?: number; status?: string; assignedToId?: number; categoryId?: number }, userId: number, role: string) {
     const where: any = {};
     if (filters.appId) where.appId = filters.appId;
     if (filters.status) where.status = filters.status;
     if (filters.assignedToId) where.assignedToId = filters.assignedToId;
+    if (filters.categoryId) where.app = { categoryId: filters.categoryId };
     if (role !== 'ADMIN') where.assignedToId = userId;
 
     const tasks = await this.prisma.task.findMany({

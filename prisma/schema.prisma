@@ -23,13 +23,24 @@ model User {
   notifications  Notification[]
 }
 
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  color     String   @default("#6366f1")
+  createdAt DateTime @default(now())
+
+  apps      App[]
+}
+
 model App {
   id          Int         @id @default(autoincrement())
   name        String
   description String?
+  categoryId  Int?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  category    Category?   @relation(fields: [categoryId], references: [id])
   tasks       Task[]
   members     AppMember[]
 }

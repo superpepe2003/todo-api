@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AppsModule } from './apps/apps.module';
 import { TasksModule } from './tasks/tasks.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     AppsModule,
     TasksModule,
     NotificationsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}
