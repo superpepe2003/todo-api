@@ -2,9 +2,9 @@ import { IsInt, IsString, Min, Max } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AddProgressDto {
-  @ApiProperty({ example: 75, description: 'Porcentaje de avance (0-100)', minimum: 0, maximum: 100 })
+  @ApiProperty({ example: 10, description: 'Porcentaje a sumar al avance actual (1-100). El total nunca supera 100.', minimum: 1, maximum: 100 })
   @IsInt()
-  @Min(0)
+  @Min(1)
   @Max(100)
   percentage: number;
 

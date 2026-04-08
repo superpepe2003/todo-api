@@ -52,7 +52,7 @@ export class TasksService {
       include: {
         assignedTo: { select: { id: true, name: true } },
         createdBy: { select: { id: true, name: true } },
-        app: { select: { id: true, name: true } },
+        app: { select: { id: true, name: true, categoryId: true } },
       },
       orderBy: [{ priority: 'desc' }, { deadline: 'asc' }],
     });
@@ -75,7 +75,7 @@ export class TasksService {
       include: {
         assignedTo: { select: { id: true, name: true, email: true } },
         createdBy: { select: { id: true, name: true } },
-        app: { select: { id: true, name: true } },
+        app: { select: { id: true, name: true, categoryId: true } },
         progressLogs: {
           include: { user: { select: { id: true, name: true } } },
           orderBy: { createdAt: 'desc' },
@@ -145,7 +145,9 @@ export class TasksService {
       throw new ForbiddenException('No tenés permiso para actualizar esta tarea');
     }
 
-    const newStatus = deriveStatus(dto.percentage, task.status);
+    // Acumular progreso: cada entrada suma al total, sin superar 100
+    const accumulated = Math.min(task.progress + dto.percentage, 100);
+    const newStatus = deriveStatus(accumulated, task.status);
 
     const [progressLog] = await this.prisma.$transaction([
       this.prisma.taskProgress.create({
@@ -153,7 +155,7 @@ export class TasksService {
       }),
       this.prisma.task.update({
         where: { id: taskId },
-        data: { progress: dto.percentage, status: newStatus },
+        data: { progress: accumulated, status: newStatus },
       }),
     ]);
 
